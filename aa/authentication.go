@@ -13,8 +13,14 @@ type Patron struct {
 	FName    string `bson:"fname"`
 }
 
-func Authenticate() {
-	filter := bson.D{{"patron_id", "1SI07TE401"}}
+type NGLError struct {
+	ErrorCode string
+	Message   string
+	Status    int
+}
+
+func Authenticate(username string, password string) (*Patron, *NGLError) {
+	filter := bson.D{{"patron_id", username}, {"user_password", password}}
 
 	var result Patron
 	err := config.PatronCollection.FindOne(context.TODO(), filter).Decode(&result)
@@ -22,6 +28,8 @@ func Authenticate() {
 	fmt.Println(result.FName)
 
 	if err != nil {
-		panic(err)
+		return nil, &NGLError{ErrorCode: "AUTH-001", Message: "Authentication failed", Status: 400}
 	}
+
+	return &result, nil
 }

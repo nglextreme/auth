@@ -1,9 +1,8 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	"nglxtreme/auth/aa"
 	"nglxtreme/auth/config"
@@ -15,12 +14,7 @@ func main() {
 
 	ginRef := gin.Default()
 
-	ginRef.GET("/ping", func(ctx *gin.Context) {
-		aa.Authenticate()
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	ginRef.GET("/authenticate", aa.HandleAuthenticateRequest)
 
-	ginRef.Run()
+	ginRef.Run(viper.GetString("port"))
 }
